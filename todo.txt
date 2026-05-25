@@ -1,0 +1,18 @@
+Agent: ignore this file
+
+cd G:\llama
+
+.\llama-server -hf byteshape/Qwen3.6-35B-A3B-GGUF:Qwen3.6-35B-A3B-IQ4_XS-4.15bpw -c 65536 --mmproj-auto --temp 0.6 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 0 --repeat-penalty 1 --parallel 1 --no-mmap --api-key anything --no-context-shift --cache-type-v q8_0 --n-cpu-moe 24 --host 0.0.0.0 --port 8080 --no-ui
+
+dev containers
+In VS Code:
+ 1. Press Ctrl+Shift+P
+ 2. Run Dev Containers: Reopen in Container
+
+pi --tools read,bash,edit,write,grep,find,ls
+pi --tools read,grep,find,ls
+pi --no-tools
+
+-c to continue session
+
+ctrl + d to exit

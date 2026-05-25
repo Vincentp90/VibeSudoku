@@ -1,0 +1,22 @@
+{
+  "name": "pi-coding-agent",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "pwd && mkdir -p ~/.pi/agent && ln -sf ${containerWorkspaceFolder}/.pi/agent/models.json ~/.pi/agent/models.json && npm install -g @earendil-works/pi-coding-agent",
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["AGENTS.md"]
+    },
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-dev-containers"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "PI_OFFLINE": "0"
+  }
+}

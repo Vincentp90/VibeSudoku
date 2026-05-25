@@ -11,6 +11,10 @@ const WHITELIST: RegExp[] = [
   /^head\b/,
   /^tail\b/,
   /^cat\b/,
+  /^python\b/,
+  /^python3\b/,
+  /^git\b/,
+  /^mkdir\b/,
 ];
 
 export default function (pi: ExtensionAPI) {

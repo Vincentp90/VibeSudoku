@@ -9,10 +9,15 @@ In VS Code:
  1. Press Ctrl+Shift+P
  2. Run Dev Containers: Reopen in Container
 
-pi --tools read,bash,edit,write,grep,find,ls
+pi --tools bash,read,edit,write,grep,find,ls -c
 pi --tools read,grep,find,ls
 pi --no-tools
 
 -c to continue session
 
 ctrl + d to exit
+
+----
+
+Prompt:
+Continue with the work specified in agent-todo.md.: 2. Core Sudoku Logic (no UI). Stop and wait for input when this is done.

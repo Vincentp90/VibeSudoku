@@ -1,5 +1,3 @@
-Environment: Windows 10 + Bash.
+Environment: Linux (vs code dev container Node 22) + Bash.
 
-Important:  
-    - Always ask permission before running a bash command  
-    - Don't try to delete files, put '// TODO DELETE THIS' at the top of the file  
+Ask the user for input if a bash command is blocked but you need it do to your work.

@@ -24,6 +24,7 @@ from src.ui.display import (
     THICK_GRID_LINE,
     WIDTH,
 )
+from src.ui.screens import Screen
 
 # Grid constants
 GRID_OFFSET_X: int = 0
@@ -63,22 +64,37 @@ class Renderer:
     # Public API
     # ------------------------------------------------------------------
 
-    def render(self, state: GameState) -> None:
+    def render(self, state: GameState, screen: Screen = Screen.GAME) -> None:
         """Render the complete game state.
 
         Parameters
         ----------
         state : GameState
             The current game state.
+        screen : Screen
+            The current application screen. Defaults to ``Screen.GAME``.
         """
         self.screen.fill(BACKGROUND)
-        self._draw_grid(state)
-        self._draw_hud(state)
 
-        if state.is_won:
-            self._draw_overlay("You Win!", "Press Space to play again")
-        elif state.is_game_over:
-            self._draw_overlay("Game Over", "Press Space to play again")
+        if screen == Screen.GAME:
+            self._draw_grid(state)
+            self._draw_hud(state)
+
+            if state.is_won:
+                self._draw_win_overlay(state)
+            elif state.is_game_over:
+                self._draw_game_over_overlay(state)
+
+        elif screen == Screen.PAUSED:
+            self._draw_grid(state)
+            self._draw_hud(state)
+            self._draw_pause_overlay()
+
+        elif screen == Screen.GAME_OVER:
+            self._draw_game_over_overlay(state)
+
+        elif screen == Screen.WIN:
+            self._draw_win_overlay(state)
 
         pygame.display.flip()
 
@@ -242,16 +258,98 @@ class Renderer:
     # Overlays
     # ------------------------------------------------------------------
 
-    def _draw_overlay(self, title: str, subtitle: str) -> None:
-        """Draw a semi-transparent overlay with a message."""
+    def _draw_pause_overlay(self) -> None:
+        """Draw the pause screen overlay."""
         overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 150))
         self.screen.blit(overlay, (0, 0))
 
-        title_surf = self._overlay_font.render(title, True, (255, 255, 255))
-        title_rect = title_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30))
-        self.screen.blit(title_surf, title_rect)
+        title = self._overlay_font.render("Paused", True, (255, 255, 255))
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30))
+        self.screen.blit(title, title_rect)
 
-        sub_surf = self._hud_font.render(subtitle, True, (200, 200, 200))
-        sub_rect = sub_surf.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30))
-        self.screen.blit(sub_surf, sub_rect)
+        hint = self._hud_font.render("Press P to resume", True, (200, 200, 200))
+        hint_rect = hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30))
+        self.screen.blit(hint, hint_rect)
+
+    def _draw_game_over_overlay(self, state: GameState) -> None:
+        """Draw the game-over overlay with elapsed time.
+
+        Parameters
+        ----------
+        state : GameState
+            The current game state.
+        """
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        self.screen.blit(overlay, (0, 0))
+
+        title = self._overlay_font.render("Game Over", True, (192, 57, 43))
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        self.screen.blit(title, title_rect)
+
+        # Elapsed time
+        total_seconds = int(state.elapsed_seconds)
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        time_text = self._hud_font.render(
+            f"Time: {minutes:02d}:{seconds:02d}",
+            True, (200, 200, 200),
+        )
+        time_rect = time_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        self.screen.blit(time_text, time_rect)
+
+        # Mistakes
+        mistake_text = self._hud_font.render(
+            f"Mistakes: {state.mistake_count}/{state.max_mistakes}",
+            True, INVALID,
+        )
+        mistake_rect = mistake_text.get_rect(
+            center=(WIDTH // 2, HEIGHT // 2 + 40),
+        )
+        self.screen.blit(mistake_text, mistake_rect)
+
+        restart = self._sub_font.render(
+            "Press Space to play again",
+            True, (200, 200, 200),
+        )
+        restart_rect = restart.get_rect(
+            center=(WIDTH // 2, HEIGHT // 2 + 90),
+        )
+        self.screen.blit(restart, restart_rect)
+
+    def _draw_win_overlay(self, state: GameState) -> None:
+        """Draw the win overlay with elapsed time.
+
+        Parameters
+        ----------
+        state : GameState
+            The current game state.
+        """
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        self.screen.blit(overlay, (0, 0))
+
+        title = self._overlay_font.render("You Win!", True, (46, 204, 113))
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        self.screen.blit(title, title_rect)
+
+        # Elapsed time
+        total_seconds = int(state.elapsed_seconds)
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        time_text = self._hud_font.render(
+            f"Time: {minutes:02d}:{seconds:02d}",
+            True, (200, 200, 200),
+        )
+        time_rect = time_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        self.screen.blit(time_text, time_rect)
+
+        restart = self._sub_font.render(
+            "Press Space to play again",
+            True, (200, 200, 200),
+        )
+        restart_rect = restart.get_rect(
+            center=(WIDTH // 2, HEIGHT // 2 + 50),
+        )
+        self.screen.blit(restart, restart_rect)

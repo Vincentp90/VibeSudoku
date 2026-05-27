@@ -1,6 +1,6 @@
 Environment: Linux (vs code dev container Node 22) + Bash.
 
-Ask user for input if bash command is blocked but you need it to do your work.
+Ask user for input if you are not sure how to proceed.
 
 ## Scripts
 

@@ -68,11 +68,11 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 5. Menus & Screens
-- `⬜` Main menu screen — New Game, Continue, Quit
-- `⬜` Difficulty selection screen
-- `⬜` Pause screen (P key)
-- `⬜` Game Over screen (too many mistakes)
-- `⬜` Win / congratulations screen with time taken
+- `✅` Main menu screen — New Game, Continue, Quit
+- `✅` Difficulty selection screen
+- `✅` Pause screen (P key)
+- `✅` Game Over screen (too many mistakes)
+- `✅` Win / congratulations screen with time taken
 
 ---
 

@@ -9,7 +9,7 @@ In VS Code:
  1. Press Ctrl+Shift+P
  2. Run Dev Containers: Reopen in Container
 
-pi --tools bash,read,edit,write,grep,find,ls -c
+pi --tools bash,read,edit,write,grep,find,ls
 pi --tools read,grep,find,ls
 pi --no-tools
 
@@ -20,8 +20,7 @@ ctrl + d to exit
 ----
 
 Prompt:
-Continue with the work specified in agent-todo.md : complete 3. Game State. Stop and wait for input when this is done.
-
+Continue with the work specified in agent-todo.md : complete 4. Rendering (Pygame UI). Stop and wait for input when this is done.
 
 Self-improvement prompt:
 Reflect on the work you just completed. What did you struggle with? Do you have suggestions about what we could change so you can do your work more optimally?    

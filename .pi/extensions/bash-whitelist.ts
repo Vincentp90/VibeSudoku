@@ -15,6 +15,8 @@ const WHITELIST: RegExp[] = [
   /^python3\b/,
   /^git\b/,
   /^mkdir\b/,
+  /^timeout\b/,
+  /^pip\b/,
 ];
 
 export default function (pi: ExtensionAPI) {

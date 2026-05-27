@@ -46,12 +46,12 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 3. Game State
-- `⬜` Define `GameState` class holding: puzzle grid, solution grid, player grid, selected cell, timer, mistake count
-- `⬜` Implement cell selection logic (mouse + keyboard arrow keys)
-- `⬜` Implement number input (1–9) and erase (Delete/Backspace)
-- `⬜` Implement note/pencil mode toggle — allow multiple candidate numbers per cell
-- `⬜` Implement win detection (player grid matches solution)
-- `⬜` Implement mistake detection and limit (e.g. 3 mistakes = game over)
+- `✅` Define `GameState` class holding: puzzle grid, solution grid, player grid, selected cell, timer, mistake count
+- `✅` Implement cell selection logic (mouse + keyboard arrow keys)
+- `✅` Implement number input (1–9) and erase (Delete/Backspace)
+- `✅` Implement note/pencil mode toggle — allow multiple candidate numbers per cell
+- `✅` Implement win detection (player grid matches solution)
+- `✅` Implement mistake detection and limit (e.g. 3 mistakes = game over)
 
 ---
 

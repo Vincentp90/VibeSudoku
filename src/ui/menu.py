@@ -8,19 +8,17 @@ from __future__ import annotations
 import math
 import pygame
 
-from src.ui.display import (
+from src.ui.theme import (
     BACKGROUND,
     FONT_NAME,
     HEIGHT,
+    MENU_ITEM_FONT_SIZE,
     PLAYER_TEXT,
     SELECTED,
+    SUBTITLE_FONT_SIZE,
+    TITLE_FONT_SIZE,
     WIDTH,
 )
-
-# Font sizes
-TITLE_FONT_SIZE: int = 64
-MENU_ITEM_FONT_SIZE: int = 36
-SUBTITLE_FONT_SIZE: int = 24
 
 
 class Menu:

@@ -20,10 +20,6 @@ ctrl + d to exit
 ----
 
 Prompt:
-A refactor task was made in refactor.md. However I want to alter the task description because I think colors should also be in the tobe theme.py. Don't execute the task.
-
-Do the refactor task specified in refactor.md. 
-
 Continue with the work specified in agent-todo.md : complete 6. Quality of Life Features. Stop and wait for input when this is done.
 
 Self-improvement prompt:

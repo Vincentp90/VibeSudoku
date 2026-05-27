@@ -10,34 +10,28 @@ import math
 import pygame
 
 from src.game_state import GameState
-from src.ui.display import (
+from src.ui.screens import Screen
+from src.ui.theme import (
     BACKGROUND,
+    CELL_SIZE,
     FONT_NAME,
     GRID_LINE,
-    HEIGHT,
+    GRID_OFFSET_X,
+    GRID_OFFSET_Y,
+    GRID_SIZE,
+    HUD_HEIGHT,
+    HUD_FONT_SIZE,
     HIGHLIGHT,
     INVALID,
     LOCKED_TEXT,
+    NOTE_FONT_SIZE,
+    NUMBER_FONT_SIZE,
+    OVERLAY_FONT_SIZE,
     PEER_HIGHLIGHT,
     PLAYER_TEXT,
     SELECTED,
-    THICK_GRID_LINE,
     WIDTH,
 )
-from src.ui.screens import Screen
-
-# Grid constants
-GRID_OFFSET_X: int = 0
-GRID_OFFSET_Y: int = 0
-GRID_SIZE: int = WIDTH  # 540
-CELL_SIZE: int = GRID_SIZE // 9  # 60
-HUD_HEIGHT: int = HEIGHT - GRID_SIZE  # 100
-
-# Font sizes
-NUMBER_FONT_SIZE: int = 36
-NOTE_FONT_SIZE: int = 14
-HUD_FONT_SIZE: int = 24
-OVERLAY_FONT_SIZE: int = 48
 
 
 class Renderer:

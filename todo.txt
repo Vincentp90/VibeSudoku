@@ -20,7 +20,11 @@ ctrl + d to exit
 ----
 
 Prompt:
-Continue with the work specified in agent-todo.md : complete 6. Quality of Life Features. Stop and wait for input when this is done.
+Add a FEATURES.md or API.md — A one-pager listing public methods on GameState and Renderer would save reading time for future agent sessions.
+
+Do the refactor task in refactor.md.
+
+Continue with the work specified in agent-todo.md : complete 7. Polish & Assets. Stop and wait for input when this is done.
 
 Self-improvement prompt:
-Reflect on the work you just completed. What did you struggle with? Do you have suggestions about what we could change so you can do your work more optimally?    
+Reflect on the work you just completed. What did you struggle with? Do you have suggestions about what we could change so you can do your work more optimally?

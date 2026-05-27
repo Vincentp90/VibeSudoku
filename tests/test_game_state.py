@@ -503,5 +503,107 @@ class TestReset(unittest.TestCase):
         self.assertFalse(self.gs.is_won)
 
 
+class TestHintSystem(unittest.TestCase):
+    """Tests for the hint system."""
+
+    def setUp(self) -> None:
+        self.puzzle = [
+            [5, 3, 0, 0, 7, 0, 0, 0, 0],
+            [6, 0, 0, 1, 9, 5, 0, 0, 0],
+            [0, 9, 8, 0, 0, 0, 0, 6, 0],
+            [8, 0, 0, 0, 6, 0, 0, 0, 3],
+            [4, 0, 0, 8, 0, 3, 0, 0, 1],
+            [7, 0, 0, 0, 2, 0, 0, 0, 6],
+            [0, 6, 0, 0, 0, 0, 2, 8, 0],
+            [0, 0, 0, 4, 1, 9, 0, 0, 5],
+            [0, 0, 0, 0, 8, 0, 0, 7, 9],
+        ]
+        self.solution = [
+            [5, 3, 4, 6, 7, 8, 9, 1, 2],
+            [6, 7, 2, 1, 9, 5, 3, 4, 8],
+            [1, 9, 8, 3, 4, 2, 5, 6, 7],
+            [8, 5, 9, 7, 6, 1, 4, 2, 3],
+            [4, 2, 6, 8, 5, 3, 7, 9, 1],
+            [7, 1, 3, 9, 2, 4, 8, 5, 6],
+            [9, 6, 1, 5, 3, 7, 2, 8, 4],
+            [2, 8, 7, 4, 1, 9, 6, 3, 5],
+            [3, 4, 5, 2, 8, 6, 1, 7, 9],
+        ]
+        self.gs = GameState(self.puzzle, self.solution)
+
+    def test_hint_defaults(self):
+        self.assertEqual(self.gs.max_hints, 3)
+        self.assertEqual(self.gs.hints_used, 0)
+        self.assertEqual(self.gs.hinted_cell, (-1, -1))
+
+    def test_give_hint_fills_empty_cell(self):
+        result = self.gs.give_hint()
+        self.assertTrue(result)
+        r, c = self.gs.hinted_cell
+        self.assertGreaterEqual(r, 0)
+        self.assertEqual(self.gs.player_grid[r][c], self.solution[r][c])
+
+    def test_hint_reveals_first_empty_cell(self):
+        result = self.gs.give_hint()
+        self.assertTrue(result)
+        r, c = self.gs.hinted_cell
+        # First empty cell in row-major order should be (0, 2)
+        self.assertEqual(r, 0)
+        self.assertEqual(c, 2)
+        self.assertEqual(self.gs.player_grid[0][2], 4)
+
+    def test_hint_increments_count(self):
+        self.gs.give_hint()
+        self.assertEqual(self.gs.hints_used, 1)
+        self.gs.give_hint()
+        self.assertEqual(self.gs.hints_used, 2)
+        self.gs.give_hint()
+        self.assertEqual(self.gs.hints_used, 3)
+
+    def test_no_hint_when_all_used(self):
+        for _ in range(3):
+            self.gs.give_hint()
+        result = self.gs.give_hint()
+        self.assertFalse(result)
+
+    def test_no_hint_when_game_over(self):
+        self.gs.is_game_over = True
+        result = self.gs.give_hint()
+        self.assertFalse(result)
+
+    def test_no_hint_when_won(self):
+        # Fill all cells correctly to trigger win
+        for r in range(9):
+            for c in range(9):
+                if self.puzzle[r][c] != 0:
+                    continue
+                self.gs.player_grid[r][c] = self.solution[r][c]
+        self.gs._check_win()
+        self.assertTrue(self.gs.is_won)
+        result = self.gs.give_hint()
+        self.assertFalse(result)
+
+    def test_hint_clears_after_use(self):
+        self.gs.give_hint()
+        self.assertGreater(self.gs.hinted_cell[0], -1)
+        self.gs.reset_hint()
+        self.assertEqual(self.gs.hinted_cell, (-1, -1))
+
+    def test_reset_clears_hints(self):
+        self.gs.give_hint()
+        self.gs.give_hint()
+        self.assertEqual(self.gs.hints_used, 2)
+        self.gs.reset()
+        self.assertEqual(self.gs.hints_used, 0)
+        self.assertEqual(self.gs.hinted_cell, (-1, -1))
+
+    def test_hint_clean_related_notes(self):
+        """A hint should clean up related notes like a correct entry."""
+        self.gs.notes[0][3].add(4)  # same row as the hint cell
+        self.gs.give_hint()
+        # The hint fills (0, 2) with 4, so (0, 3) note should be cleaned
+        self.assertNotIn(4, self.gs.notes[0][3])
+
+
 if __name__ == "__main__":
     unittest.main()

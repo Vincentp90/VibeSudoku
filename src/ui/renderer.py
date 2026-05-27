@@ -21,6 +21,7 @@ from src.ui.theme import (
     GRID_SIZE,
     HUD_HEIGHT,
     HUD_FONT_SIZE,
+    HINT,
     HIGHLIGHT,
     INVALID,
     LOCKED_TEXT,
@@ -120,8 +121,11 @@ class Renderer:
                     color = SELECTED
                 elif state.selected_row >= 0:
                     sel_num = state.player_grid[sel_r][sel_c]
+                    # Hint highlight (overrides peer highlights)
+                    if (r, c) == state.hinted_cell:
+                        color = HINT
                     # Same number highlight
-                    if state.player_grid[r][c] == sel_num and sel_num != 0:
+                    elif state.player_grid[r][c] == sel_num and sel_num != 0:
                         color = HIGHLIGHT
                     # Peer highlight (same row / col / box)
                     elif (
@@ -231,7 +235,7 @@ class Renderer:
     # ------------------------------------------------------------------
 
     def _draw_hud(self, state: GameState) -> None:
-        """Draw the heads-up display (timer and mistakes)."""
+        """Draw the heads-up display (timer, mistakes, and hints)."""
         hud_y = GRID_SIZE + 10
 
         # Timer
@@ -247,6 +251,26 @@ class Renderer:
             True, INVALID if state.mistake_count >= state.max_mistakes - 1 else (50, 50, 50),
         )
         self.screen.blit(mistake_text, (10, hud_y + HUD_FONT_SIZE + 5))
+
+        # Hints
+        hints_text = self._hud_font.render(
+            f"Hints: {state.hints_used}/{state.max_hints}",
+            True, (50, 50, 50),
+        )
+        self.screen.blit(hints_text, (10, hud_y + 2 * (HUD_FONT_SIZE + 5)))
+
+    def _draw_hint_message(self, state: GameState) -> None:
+        """Draw a brief "Hint used!" message when a hint is applied."""
+        if state.hinted_cell[0] < 0:
+            return
+
+        r, c = state.hinted_cell
+        x = c * CELL_SIZE + CELL_SIZE // 2
+        y = r * CELL_SIZE + CELL_SIZE // 2
+
+        # Draw a subtle glow outline around the hinted cell
+        hint_rect = pygame.Rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(self.screen, HINT, hint_rect, 3)
 
     # ------------------------------------------------------------------
     # Overlays
@@ -347,3 +371,44 @@ class Renderer:
             center=(WIDTH // 2, HEIGHT // 2 + 50),
         )
         self.screen.blit(restart, restart_rect)
+
+    def _draw_shortcuts_overlay(self) -> None:
+        """Draw a keyboard shortcut reference overlay."""
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        self.screen.blit(overlay, (0, 0))
+
+        title = self._overlay_font.render("Keyboard Shortcuts", True, (255, 255, 255))
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 180))
+        self.screen.blit(title, title_rect)
+
+        # Build shortcut lines
+        shortcuts = [
+            ("← → ↑ ↓ / WASD", "Move selection"),
+            ("1 – 9", "Enter number"),
+            ("Backspace / Delete", "Erase cell"),
+            ("N", "Toggle note/pencil mode"),
+            ("Ctrl + Z", "Undo last action"),
+            ("H", "Give hint"),
+            ("P", "Pause game"),
+            ("K", "Close this screen"),
+        ]
+
+        y_start = HEIGHT // 2 - 120
+        for key_text, desc_text in shortcuts:
+            # Key label
+            key_surf = self._hud_font.render(key_text, True, (241, 196, 15))
+            # Description
+            desc_surf = self._hud_font.render(desc_text, True, (200, 200, 200))
+
+            # Center the pair
+            total_width = key_surf.get_width() + 20 + desc_surf.get_width()
+            x = WIDTH // 2 - total_width // 2
+
+            self.screen.blit(key_surf, (x, y_start))
+            self.screen.blit(desc_surf, (x + key_surf.get_width() + 20, y_start))
+            y_start += 40
+
+        close_hint = self._hud_font.render("Press K to close", True, (150, 150, 150))
+        close_rect = close_hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 160))
+        self.screen.blit(close_hint, close_rect)

@@ -68,6 +68,11 @@ class GameState:
     is_game_over: bool = False
     is_won: bool = False
 
+    # Hint system
+    max_hints: int = 3
+    hints_used: int = 0
+    hinted_cell: Tuple[int, int] = (-1, -1)
+
     def __post_init__(self) -> None:
         """Initialize player_grid from puzzle and start the timer."""
         self.player_grid = [row[:] for row in self.puzzle]
@@ -317,6 +322,55 @@ class GameState:
         """Toggle note/pencil mode on/off."""
         self.is_note_mode = not self.is_note_mode
 
+    def give_hint(self) -> bool:
+        """Reveal one empty cell with the correct answer.
+
+        Uses one hint per call (up to ``max_hints``).  The hinted cell
+        is filled with the correct number and the cell position is
+        recorded so the renderer can highlight it.
+
+        Returns ``True`` if a hint was given, ``False`` if no hints
+        remain or the puzzle is already complete.
+        """
+        if self.hints_used >= self.max_hints:
+            return False
+        if self.is_won or self.is_game_over:
+            return False
+
+        # Find an empty cell
+        empty_cells: List[Tuple[int, int]] = []
+        for r in range(9):
+            for c in range(9):
+                if self.player_grid[r][c] == 0:
+                    empty_cells.append((r, c))
+
+        if not empty_cells:
+            return False  # puzzle already complete
+
+        # Pick the first empty cell (deterministic)
+        r, c = empty_cells[0]
+
+        # Record the hinted cell for rendering
+        self.hinted_cell = (r, c)
+
+        # Place the correct number
+        self.player_grid[r][c] = self.solution[r][c]
+
+        # Clean up related notes (same as a correct entry)
+        self._clean_related_notes(r, c, self.solution[r][c])
+
+        # Clear the hint highlight after one use
+        self.hints_used += 1
+
+        # Check for win
+        self._check_win()
+
+        return True
+
+    def reset_hint(self) -> None:
+        """Clear the current hint highlight."""
+        self.hinted_cell = (-1, -1)
+
     def reset(self) -> None:
         """Reset the game state to a fresh start (same puzzle/solution)."""
         self.player_grid = [row[:] for row in self.puzzle]
@@ -330,3 +384,5 @@ class GameState:
         self.is_note_mode = False
         self.is_game_over = False
         self.is_won = False
+        self.hints_used = 0
+        self.hinted_cell = (-1, -1)

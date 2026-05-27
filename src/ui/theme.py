@@ -19,6 +19,7 @@ HIGHLIGHT: tuple[int, int, int] = (206, 215, 222)
 SELECTED: tuple[int, int, int] = (120, 177, 232)
 INVALID: tuple[int, int, int] = (192, 57, 43)
 PEER_HIGHLIGHT: tuple[int, int, int] = (230, 240, 245)
+HINT: tuple[int, int, int] = (241, 196, 15)
 
 # Fonts
 FONT_NAME: str = "assets/fonts/default.ttf"
@@ -50,6 +51,7 @@ __all__ = [
     "SELECTED",
     "INVALID",
     "PEER_HIGHLIGHT",
+    "HINT",
     # Fonts
     "FONT_NAME",
     # Font sizes
@@ -66,6 +68,8 @@ __all__ = [
     "GRID_SIZE",
     "CELL_SIZE",
     "HUD_HEIGHT",
+    # Hint
+    "HINT",
     # Re-exported from display.py
     "WIDTH",
     "HEIGHT",

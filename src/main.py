@@ -18,6 +18,7 @@ from src.game_state import GameState
 from src.ui.renderer import Renderer
 from src.ui.screens import Screen, ScreenManager
 from src.ui.menu import Menu
+from src.ui.theme import HINT
 
 
 # Difficulty selection constants
@@ -64,6 +65,9 @@ def main() -> None:
     # Menu hover state
     main_menu_hover = -1
     difficulty_hover = -1
+
+    # Keyboard shortcut overlay toggle
+    show_shortcuts = False
 
     running = True
     while running:
@@ -142,6 +146,15 @@ def main() -> None:
                     # Undo
                     elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
                         game_state.undo()
+
+                    # Hint
+                    elif event.key == pygame.K_h:
+                        if game_state.give_hint():
+                            show_shortcuts = False  # close overlay if open
+
+                    # Keyboard shortcut overlay
+                    elif event.key == pygame.K_k:
+                        show_shortcuts = not show_shortcuts
 
                 # --- Paused ---
                 elif screen_manager.current == Screen.PAUSED:
@@ -232,6 +245,8 @@ def main() -> None:
         elif screen_manager.current in (Screen.GAME, Screen.PAUSED, Screen.GAME_OVER, Screen.WIN):
             if game_state is not None:
                 renderer.render(game_state, screen_manager.current)
+                if screen_manager.current == Screen.GAME and show_shortcuts:
+                    renderer._draw_shortcuts_overlay()
             else:
                 renderer.render(game_state, Screen.GAME)  # fallback
 

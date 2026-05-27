@@ -77,10 +77,18 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 6. Quality of Life Features
-- `⬜` Undo (Ctrl+Z) — revert last player action
-- `⬜` Hint system — reveals one correct cell (limited uses)
-- `⬜` Auto-remove pencil marks when a number is confirmed in a related cell
-- `⬜` Keyboard shortcut reference shown on screen or via H key
+- `✅` Undo (Ctrl+Z) — revert last player action
+- `✅` Hint system — reveals one correct cell (limited uses)
+  - `✅` Add `max_hints` / `hints_used` to GameState
+  - `✅` Add `give_hint()` method to GameState
+  - `✅` Wire up hint key (H) in main.py
+  - `✅` Render hint count in HUD
+  - `✅` Visually highlight the hinted cell (yellow border)
+  - `✅` Write tests for hint system
+- `✅` Auto-remove pencil marks when a number is confirmed in a related cell
+- `✅` Keyboard shortcut reference shown on screen or via K key
+  - `✅` Add `_draw_shortcuts_overlay()` to Renderer
+  - `✅` Wire up overlay key (K) in main.py
 
 ---
 

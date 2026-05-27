@@ -20,4 +20,8 @@ ctrl + d to exit
 ----
 
 Prompt:
-Continue with the work specified in agent-todo.md.: 2. Core Sudoku Logic (no UI). Stop and wait for input when this is done.
+Continue with the work specified in agent-todo.md : complete 3. Game State. Stop and wait for input when this is done.
+
+
+Self-improvement prompt:
+Reflect on the work you just completed. What did you struggle with? Do you have suggestions about what we could change so you can do your work more optimally?    

@@ -37,11 +37,11 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 2. Core Sudoku Logic (no UI)
-- `⬜` Implement Sudoku validator — checks rows, columns, and 3×3 boxes
-- `⬜` Implement backtracking solver
-- `⬜` Implement puzzle generator — creates a full solved board, then removes cells to create a puzzle
-- `⬜` Add difficulty levels (easy / medium / hard) by controlling how many cells are removed
-- `⬜` Write unit tests for validator, solver, and generator (`tests/test_logic.py`)
+- `✅` Implement Sudoku validator — checks rows, columns, and 3×3 boxes
+- `✅` Implement backtracking solver
+- `✅` Implement puzzle generator — creates a full solved board, then removes cells to create a puzzle
+- `✅` Add difficulty levels (easy / medium / hard) by controlling how many cells are removed
+- `✅` Write unit tests for validator, solver, and generator (`tests/test_logic.py`)
 
 ---
 

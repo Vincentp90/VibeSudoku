@@ -33,6 +33,23 @@ Create `src/ui/theme.py` (or enhance `display.py`) as the single source of truth
 
 1. **Create `src/ui/theme.py`** with the following structure:
    ```python
+   # Import window dimensions from display.py (display-specific)
+   from src.ui.display import WIDTH, HEIGHT
+
+   # Colours
+   BACKGROUND: tuple[int, int, int] = (255, 255, 255)
+   GRID_LINE: tuple[int, int, int] = (0, 0, 0)
+   THICK_GRID_LINE: tuple[int, int, int] = (0, 0, 0)
+   LOCKED_TEXT: tuple[int, int, int] = (30, 30, 30)
+   PLAYER_TEXT: tuple[int, int, int] = (41, 128, 185)
+   HIGHLIGHT: tuple[int, int, int] = (206, 215, 222)
+   SELECTED: tuple[int, int, int] = (120, 177, 232)
+   INVALID: tuple[int, int, int] = (192, 57, 43)
+   PEER_HIGHLIGHT: tuple[int, int, int] = (230, 240, 245)
+
+   # Fonts
+   FONT_NAME: str = "assets/fonts/default.ttf"
+
    # Font sizes
    NUMBER_FONT_SIZE: int = 36
    NOTE_FONT_SIZE: int = 14
@@ -49,18 +66,15 @@ Create `src/ui/theme.py` (or enhance `display.py`) as the single source of truth
    CELL_SIZE: int = 60
    HUD_HEIGHT: int = 100
 
-   # Export existing display constants
-   from src.ui.display import (
-       WIDTH, HEIGHT,
-       BACKGROUND,
-       GRID_LINE, THICK_GRID_LINE,
-       LOCKED_TEXT, PLAYER_TEXT,
-       HIGHLIGHT, SELECTED, INVALID,
-       PEER_HIGHLIGHT,
-       FONT_NAME,
-   )
-
    __all__ = [
+       # Colours
+       "BACKGROUND",
+       "GRID_LINE", "THICK_GRID_LINE",
+       "LOCKED_TEXT", "PLAYER_TEXT",
+       "HIGHLIGHT", "SELECTED", "INVALID",
+       "PEER_HIGHLIGHT",
+       # Fonts
+       "FONT_NAME",
        # Font sizes
        "NUMBER_FONT_SIZE", "NOTE_FONT_SIZE", "HUD_FONT_SIZE",
        "OVERLAY_FONT_SIZE", "TITLE_FONT_SIZE",
@@ -68,12 +82,8 @@ Create `src/ui/theme.py` (or enhance `display.py`) as the single source of truth
        # Grid & layout
        "GRID_OFFSET_X", "GRID_OFFSET_Y", "GRID_SIZE",
        "CELL_SIZE", "HUD_HEIGHT",
-       # Re-exported display constants
-       "WIDTH", "HEIGHT", "BACKGROUND",
-       "GRID_LINE", "THICK_GRID_LINE",
-       "LOCKED_TEXT", "PLAYER_TEXT",
-       "HIGHLIGHT", "SELECTED", "INVALID",
-       "PEER_HIGHLIGHT", "FONT_NAME",
+       # Re-exported from display.py
+       "WIDTH", "HEIGHT",
    ]
    ```
 
@@ -95,10 +105,10 @@ Create `src/ui/theme.py` (or enhance `display.py`) as the single source of truth
 ### Acceptance Criteria
 - Running `python3 scripts/smoke_test.py` still passes (window opens and renders for 2s).
 - All existing tests pass (`python3 -m pytest tests/ -v`).
-- No file defines any of the 12 constants listed above locally — they all import from `theme.py`.
-- `grep -r "FONT_SIZE" src/` only finds results in `theme.py` (imports and `__all__`).
+- `display.py` remains but only contains `WIDTH`, `HEIGHT` (and anything that truly fits "display" in the future).
+- No file defines colours, font sizes, or grid constants locally — they all import from `theme.py`.
+- `grep -r "FONT_SIZE\|BACKGROUND\|GRID_LINE" src/` only finds results in `theme.py` (imports and `__all__`).
 
 ### Notes
 - This is a pure refactor — no behaviour changes. One import at a time, test after each file.
-- `display.py` can stay as-is for colours; `theme.py` is for sizes/layout. The separation keeps things readable.
-- If `display.py` and `theme.py` feel redundant, consider merging them into a single `display.py` with everything in it.
+- `display.py` is kept but pruned to only `WIDTH` and `HEIGHT` — the only constants that are truly "display-specific" (window dimensions). Everything else (colours, fonts, grid constants) lives in `theme.py`.

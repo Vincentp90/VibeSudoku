@@ -56,14 +56,14 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 4. Rendering (Pygame UI)
-- `⬜` Draw 9×9 grid with correct thick/thin line weights (box borders vs cell borders)
-- `⬜` Render given (locked) numbers vs player-entered numbers in distinct styles
-- `⬜` Highlight selected cell and its row/column/box peers
-- `⬜` Highlight cells containing the same number as the selected cell
-- `⬜` Render pencil/note numbers (small, multi-per-cell)
-- `⬜` Render mistake indicator (e.g. "Mistakes: 2/3")
-- `⬜` Render timer (counting up)
-- `⬜` Render invalid entries in red
+- `✅` Draw 9×9 grid with correct thick/thin line weights (box borders vs cell borders)
+- `✅` Render given (locked) numbers vs player-entered numbers in distinct styles
+- `✅` Highlight selected cell and its row/column/box peers
+- `✅` Highlight cells containing the same number as the selected cell
+- `✅` Render pencil/note numbers (small, multi-per-cell)
+- `✅` Render mistake indicator (e.g. "Mistakes: 2/3")
+- `✅` Render timer (counting up)
+- `✅` Render invalid entries in red
 
 ---
 

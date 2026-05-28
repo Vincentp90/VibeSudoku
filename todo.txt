@@ -2,7 +2,7 @@ Agent: ignore this file
 
 cd G:\llama
 
-.\llama-server -hf byteshape/Qwen3.6-35B-A3B-GGUF:Qwen3.6-35B-A3B-IQ4_XS-4.15bpw -c 65536 --mmproj-auto --temp 0.6 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 0 --repeat-penalty 1 --parallel 1 --no-mmap --api-key anything --no-context-shift --cache-type-v q8_0 --n-cpu-moe 24 --host 0.0.0.0 --port 8080 --no-ui
+.\llama-server -hf byteshape/Qwen3.6-35B-A3B-GGUF:Qwen3.6-35B-A3B-IQ4_XS-4.15bpw -c 65536 --mmproj-auto --temp 0.6 --top-k 20 --top-p 0.95 --min-p 0 --presence-penalty 0 --repeat-penalty 1 --parallel 1 --no-mmap --api-key anything --no-context-shift --cache-type-k q8_0 --cache-type-v q5_1 --n-cpu-moe 22 --flash-attn on -b 2048 -ub 2048 --no-ui
 
 dev containers
 In VS Code:
@@ -15,12 +15,10 @@ pi --no-tools
 
 -c to continue session
 
-ctrl + d to exit
-
 ----
 
 Prompt:
-Continue with the work specified in agent-todo.md : complete 8. Final. Stop and wait for input when this is done.
+Do the tasks specified in improvements.md
 
 Improve tests:
 Go through the current tests, try to find how they could be more strict, catching more bugs. Make the changes and run the tests. If tests are failing on issues that cannot be solved, then undo your change to that specific test.

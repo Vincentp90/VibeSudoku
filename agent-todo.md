@@ -101,6 +101,6 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 8. Final
-- `⬜` Full playthrough test — generate puzzle, play to completion, verify win screen
-- `⬜` Code cleanup, remove debug prints, add docstrings to public functions
-- `⬜` Update `README.md` with final controls reference and screenshot
+- `✅` Full playthrough test — generate puzzle, play to completion, verify win screen
+- `✅` Code cleanup, remove debug prints, add docstrings to public functions
+- `✅` Update `README.md` with final controls reference and screenshot

@@ -157,6 +157,10 @@ class TestNumberInput(unittest.TestCase):
         self.gs.enter_number(4)
         self.assertEqual(self.gs.player_grid[0][2], 4)
         self.assertEqual(self.gs.mistake_count, 0)
+        # Related notes should be cleaned after correct entry
+        self.assertNotIn(4, self.gs.notes[0][3])  # same row
+        self.assertNotIn(4, self.gs.notes[1][2])  # same column
+        self.assertNotIn(4, self.gs.notes[1][1])  # same box
 
     def test_enter_incorrect_number(self):
         self.gs.select_cell(0, 2)
@@ -172,8 +176,10 @@ class TestNumberInput(unittest.TestCase):
 
     def test_enter_zero_ignored(self):
         self.gs.select_cell(0, 2)
+        history_len = len(self.gs.action_history)
         self.gs.enter_number(0)
         self.assertEqual(self.gs.player_grid[0][2], 0)  # still 0
+        self.assertEqual(len(self.gs.action_history), history_len)  # no undo created
 
     def test_enter_on_no_selection(self):
         self.gs.enter_number(4)
@@ -185,6 +191,8 @@ class TestNumberInput(unittest.TestCase):
         self.assertEqual(self.gs.player_grid[0][2], 4)
         self.gs.erase()
         self.assertEqual(self.gs.player_grid[0][2], 0)
+        # Erase should also clear the flash state
+        self.assertEqual(self.gs.flash_cell, (-1, -1))
 
     def test_erase_locked_cell(self):
         self.gs.select_cell(0, 0)
@@ -385,6 +393,8 @@ class TestUndo(unittest.TestCase):
         self.assertEqual(self.gs.player_grid[0][1], 0)
         self.gs.undo()
         self.assertEqual(self.gs.player_grid[0][0], 0)
+        # History should be empty after all undos
+        self.assertEqual(len(self.gs.action_history), 0)
 
     def test_undo_note(self):
         self.gs.is_note_mode = True
@@ -480,9 +490,11 @@ class TestReset(unittest.TestCase):
     def test_reset_clears_player_grid(self):
         self.gs.player_grid[0][2] = 4
         self.gs.mistake_count = 2
+        self.gs.notes[0][2].add(5)  # add a note
         self.gs.reset()
         self.assertEqual(self.gs.player_grid[0][2], 0)
         self.assertEqual(self.gs.mistake_count, 0)
+        self.assertEqual(self.gs.notes[0][2], set())  # notes also cleared
 
     def test_reset_clears_selection(self):
         self.gs.select_cell(3, 3)
@@ -495,6 +507,13 @@ class TestReset(unittest.TestCase):
         self.gs.enter_number(5)
         self.gs.reset()
         self.assertEqual(len(self.gs.action_history), 0)
+
+    def test_reset_clears_flash(self):
+        self.gs.select_cell(0, 2)  # empty cell — solution has 4 here
+        self.gs.enter_number(4)  # correct entry
+        self.assertEqual(self.gs.flash_cell, (0, 2))
+        self.gs.reset()
+        self.assertEqual(self.gs.flash_cell, (-1, -1))
 
     def test_reset_clears_game_over(self):
         self.gs.is_game_over = True
@@ -599,10 +618,15 @@ class TestHintSystem(unittest.TestCase):
 
     def test_hint_clean_related_notes(self):
         """A hint should clean up related notes like a correct entry."""
-        self.gs.notes[0][3].add(4)  # same row as the hint cell
+        # Add note '4' to cells in the same row, column, and box as (0, 2)
+        self.gs.notes[0][3].add(4)  # same row
+        self.gs.notes[1][2].add(4)  # same column
+        self.gs.notes[1][1].add(4)  # same 3x3 box
         self.gs.give_hint()
-        # The hint fills (0, 2) with 4, so (0, 3) note should be cleaned
+        # The hint fills (0, 2) with 4, so related notes should be cleaned
         self.assertNotIn(4, self.gs.notes[0][3])
+        self.assertNotIn(4, self.gs.notes[1][2])
+        self.assertNotIn(4, self.gs.notes[1][1])
 
 
 if __name__ == "__main__":

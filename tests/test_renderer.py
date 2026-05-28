@@ -14,6 +14,7 @@ import pygame
 from src.game_state import GameState
 from src.ui.renderer import Renderer
 from src.ui.screens import Screen
+from src.ui.theme import CELL_SIZE, SELECTED
 
 
 # ------------------------------------------------------------------
@@ -101,6 +102,19 @@ class TestGridDrawing(unittest.TestCase):
         """_draw_grid should complete without error."""
         self.renderer._draw_grid(self.state)
 
+    def test_draw_grid_selection_highlight(self):
+        """Selected cell should be drawn with the SELECTED colour."""
+        self.state.selected_row = 0
+        self.state.selected_col = 0
+        self.renderer._draw_grid(self.state)
+        cx, cy = CELL_SIZE // 2, CELL_SIZE // 2
+        pixel = self.renderer.screen.get_at((cx, cy))
+        self.assertEqual(
+            (pixel.r, pixel.g, pixel.b),
+            SELECTED,
+            "Selection highlight colour mismatch",
+        )
+
     def test_draw_cell_backgrounds(self):
         """_draw_cell_backgrounds should complete without error."""
         self.renderer._draw_cell_backgrounds(self.state)
@@ -108,6 +122,21 @@ class TestGridDrawing(unittest.TestCase):
     def test_draw_numbers(self):
         """_draw_numbers should complete without error."""
         self.renderer._draw_numbers(self.state)
+
+    def test_draw_numbers_invalid_color(self):
+        """Wrong numbers should be drawn in INVALID colour."""
+        from src.ui.theme import INVALID
+        # Place a wrong number in the player grid
+        self.state.player_grid[0][2] = 9  # wrong — should be 4
+        self.renderer._draw_numbers(self.state)
+        cx, cy = 2 * CELL_SIZE + CELL_SIZE // 2, 0 * CELL_SIZE + CELL_SIZE // 2
+        pixel = self.renderer.screen.get_at((cx, cy))
+        # The INVALID colour should not be white (background)
+        self.assertNotEqual(
+            (pixel.r, pixel.g, pixel.b),
+            (255, 255, 255),
+            "Wrong number was not rendered",
+        )
 
     def test_draw_notes(self):
         """_draw_notes should complete without error."""

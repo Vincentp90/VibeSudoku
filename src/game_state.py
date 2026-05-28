@@ -168,6 +168,8 @@ class GameState:
 
     def _enter_value(self, row: int, col: int, number: int) -> None:
         """Place a confirmed number in a cell."""
+        if number == 0:
+            return  # 0 is not a valid number to enter; use erase() instead
         previous_value = self.player_grid[row][col]
         previous_notes = set(self.notes[row][col])
 
@@ -243,6 +245,8 @@ class GameState:
 
         self.player_grid[r][c] = 0
         self.notes[r][c].clear()
+        self.flash_cell = (-1, -1)
+        self._flash_time = 0.0
 
     def _clean_related_notes(self, row: int, col: int, number: int) -> None:
         """Remove *number* from notes in the same row, column, and box."""
@@ -392,3 +396,5 @@ class GameState:
         self.is_won = False
         self.hints_used = 0
         self.hinted_cell = (-1, -1)
+        self.flash_cell = (-1, -1)
+        self._flash_time = 0.0

@@ -30,19 +30,6 @@ class TestSudokuValidator(unittest.TestCase):
             "713924856",
             "961537284",
             "287419635",
-            "345383172",
-        ])
-        # This is *almost* solved but has a conflict in the last row
-        # Let's use a real solved board
-        solved = self._make_board([
-            "534678912",
-            "672195348",
-            "198342567",
-            "859761423",
-            "426853791",
-            "713924856",
-            "961537284",
-            "287419635",
             "345826179",
         ])
         self.assertTrue(SudokuValidator.is_valid(solved))
@@ -91,8 +78,8 @@ class TestSudokuValidator(unittest.TestCase):
             "287419635",
             "345826179",
         ])
-        # Duplicate '3' in top-left 3×3 box
-        board[0][1] = 5  # was 3, change to 5 — but 5 already at (0,0)
+        # Duplicate '3' in top-left 3×3 box: (0,1)=3, change (2,1) to 3
+        board[2][1] = 3
         self.assertFalse(SudokuValidator.is_valid(board))
 
     def test_invalid_number(self):
@@ -235,6 +222,9 @@ class TestSudokuGenerator(unittest.TestCase):
         self.assertIsInstance(solution, list)
         self.assertEqual(len(puzzle), 9)
         self.assertEqual(len(solution), 9)
+        # Puzzle and solution must be independent copies
+        puzzle[0][0] = 99
+        self.assertNotEqual(puzzle[0][0], solution[0][0])
 
     def test_puzzle_cells_are_subset_of_solution(self):
         puzzle, solution = self.generator.generate("easy")
@@ -246,6 +236,11 @@ class TestSudokuGenerator(unittest.TestCase):
     def test_puzzle_is_valid(self):
         puzzle, solution = self.generator.generate("hard")
         self.assertTrue(SudokuValidator.is_valid(puzzle))
+        # Puzzle must have empty cells to be playable
+        empty_count = sum(
+            1 for r in range(9) for c in range(9) if puzzle[r][c] == 0
+        )
+        self.assertGreater(empty_count, 0)
 
     def test_solution_is_valid(self):
         _, solution = self.generator.generate("easy")
@@ -256,13 +251,22 @@ class TestSudokuGenerator(unittest.TestCase):
         self.assertTrue(SudokuValidator.is_solution(solution))
 
     def test_difficulty_levels(self):
-        """Each difficulty should remove a different number of cells."""
+        """Each difficulty should remove a different number of cells.
+
+        Easy should have more filled cells than medium, which should have
+        more than hard.
+        """
+        results = {}
         for diff in ["easy", "medium", "hard"]:
             puzzle, _ = self.generator.generate(diff)
             filled = sum(
                 1 for r in range(9) for c in range(9) if puzzle[r][c] != 0
             )
+            results[diff] = filled
             self.assertGreater(filled, 0)
+        # Verify difficulty ordering: easy > medium > hard
+        self.assertGreater(results["easy"], results["medium"])
+        self.assertGreater(results["medium"], results["hard"])
 
     def test_invalid_difficulty(self):
         with self.assertRaises(ValueError):

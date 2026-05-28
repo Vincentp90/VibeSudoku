@@ -18,6 +18,7 @@ pi --no-tools
 ----
 
 Prompt:
+Problems from playtesting: cell selection color is the same as placed number color. So I can't see the number in the current selected cell.
 Do the tasks specified in improvements.md
 
 Improve tests:

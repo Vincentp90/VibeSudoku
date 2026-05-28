@@ -161,6 +161,10 @@ def main() -> None:
             if not running:
                 break
 
+        # Sync game_state from the handler (it may have been updated
+        # by difficulty selection or reset handlers)
+        game_state = input_handler.game_state
+
         # Game state updates
         _update_game_state(screen_manager, game_state)
 

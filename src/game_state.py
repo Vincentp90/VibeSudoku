@@ -73,6 +73,10 @@ class GameState:
     hints_used: int = 0
     hinted_cell: Tuple[int, int] = (-1, -1)
 
+    # Animation state
+    flash_cell: Tuple[int, int] = (-1, -1)  # Cell that just had a number placed
+    _flash_time: float = 0.0  # Timestamp when the flash started
+
     def __post_init__(self) -> None:
         """Initialize player_grid from puzzle and start the timer."""
         self.player_grid = [row[:] for row in self.puzzle]
@@ -177,6 +181,8 @@ class GameState:
         ))
 
         self.player_grid[row][col] = number
+        self.flash_cell = (row, col)
+        self._flash_time = time.time()
 
         # Check if this is a mistake
         if number != self.solution[row][col]:

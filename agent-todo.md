@@ -93,10 +93,10 @@ Keep code modular: logic in src/logic/, rendering in src/ui/, constants in src/t
 ---
 
 ## 7. Polish & Assets
-- `⬜` Choose and load a clean font (e.g. a TTF bundled in `assets/fonts/`)
-- `⬜` Consistent colour scheme via a central `theme.py` constants file
-- `⬜` Add subtle animations: cell selection highlight, number placement flash
-- `⬜` Window icon and title (`Sudoku`)
+- `✅` Choose and load a clean font (e.g. a TTF bundled in `assets/fonts/`)
+- `✅` Consistent colour scheme via a central `theme.py` constants file
+- `✅` Add subtle animations: cell selection highlight, number placement flash
+- `✅` Window icon and title (`Sudoku`)
 
 ---
 

@@ -20,7 +20,9 @@ ctrl + d to exit
 ----
 
 Prompt:
-Continue with the work specified in agent-todo.md : complete 7. Polish & Assets. Stop and wait for input when this is done.
+Go through the current tests, try to find how they could be more strict, catching more bugs. Make the changes and run the tests. If tests are failing on issues that cannot be solved, then undo your change to that specific test.
+
+Continue with the work specified in agent-todo.md : complete 8. Final. Stop and wait for input when this is done.
 
 Keeping docs up to date:
 Quickly check if file API.md is still up to date.

@@ -7,6 +7,8 @@ game-over / win overlays.
 from __future__ import annotations
 
 import math
+import time
+
 import pygame
 
 from src.game_state import GameState
@@ -16,6 +18,7 @@ from src.ui.theme import (
     CELL_SIZE,
     FONT_NAME,
     GRID_LINE,
+    THICK_GRID_LINE,
     GRID_OFFSET_X,
     GRID_OFFSET_Y,
     GRID_SIZE,
@@ -25,13 +28,24 @@ from src.ui.theme import (
     HIGHLIGHT,
     INVALID,
     LOCKED_TEXT,
+    NOTE_COLOR,
     NOTE_FONT_SIZE,
     NUMBER_FONT_SIZE,
     OVERLAY_FONT_SIZE,
+    OVERLAY_TEXT_COLOR,
     PEER_HIGHLIGHT,
     PLAYER_TEXT,
     SELECTED,
     WIDTH,
+    HEIGHT,
+    HUD_TEXT_COLOR,
+    OVERLAY_TITLE_COLOR,
+    WIN_TITLE_COLOR,
+    GAME_OVER_TITLE_COLOR,
+    FOOTER_FONT_SIZE,
+    SHORTCUT_KEY_COLOR,
+    SHORTCUT_DESC_COLOR,
+    SHORTCUT_CLOSE_COLOR,
 )
 
 
@@ -54,6 +68,12 @@ class Renderer:
         self._note_font = pygame.font.Font(FONT_NAME, NOTE_FONT_SIZE)
         self._hud_font = pygame.font.Font(FONT_NAME, HUD_FONT_SIZE)
         self._overlay_font = pygame.font.Font(FONT_NAME, OVERLAY_FONT_SIZE)
+        self._sub_font = pygame.font.Font(FONT_NAME, FOOTER_FONT_SIZE)
+
+        # Animation state
+        self._flash_timer: float = 0.0  # Time since last number placement (seconds)
+        self._flash_duration: float = 0.3  # Flash lasts 300ms
+        self._selected_cell_timestamp: float = 0.0  # When cell was selected (for pulse)
 
     # ------------------------------------------------------------------
     # Public API
@@ -91,8 +111,6 @@ class Renderer:
         elif screen == Screen.WIN:
             self._draw_win_overlay(state)
 
-        pygame.display.flip()
-
     # ------------------------------------------------------------------
     # Grid & cells
     # ------------------------------------------------------------------
@@ -102,6 +120,7 @@ class Renderer:
         self._draw_cell_backgrounds(state)
         self._draw_numbers(state)
         self._draw_notes(state)
+        self._draw_animations(state)
         self._draw_lines()
 
     def _draw_cell_backgrounds(self, state: GameState) -> None:
@@ -201,7 +220,7 @@ class Renderer:
                     nx = x0 + col_offset * note_size + note_size // 2
                     ny = y0 + row_offset * note_size + note_size // 2
 
-                    text = self._note_font.render(str(num), True, (100, 100, 100))
+                    text = self._note_font.render(str(num), True, NOTE_COLOR)
                     text_rect = text.get_rect(center=(nx, ny))
                     self.screen.blit(text, text_rect)
 
@@ -231,6 +250,73 @@ class Renderer:
             )
 
     # ------------------------------------------------------------------
+    # Animations
+    # ------------------------------------------------------------------
+
+    def _draw_animations(self, state: GameState) -> None:
+        """Draw subtle animation effects (selection pulse, number flash)."""
+        self._draw_selection_pulse(state)
+        self._draw_number_flash(state)
+
+    def _draw_selection_pulse(self, state: GameState) -> None:
+        """Draw a subtle pulsing border on the selected cell.
+
+        The border oscillates between SELECTED and a brighter highlight
+        using a sine wave for smooth easing.
+        """
+        r, c = state.selected_row, state.selected_col
+        if r < 0 or c < 0:
+            return
+
+        # Skip if this cell is already highlighted (e.g. same number, hint)
+        if state.hinted_cell == (r, c):
+            return
+
+        # Use a sine wave for smooth pulsing (period ~2 seconds)
+        import math
+        pulse = math.sin(state.elapsed_seconds * math.pi) * 0.5 + 0.5  # 0→1→0
+
+        # Interpolate border width: 1 (thin) → 3 (thick)
+        border_width = int(1 + pulse * 2)
+
+        x = c * CELL_SIZE
+        y = r * CELL_SIZE
+
+        # Draw a border around the cell
+        pygame.draw.rect(
+            self.screen,
+            SELECTED,
+            (x, y, CELL_SIZE, CELL_SIZE),
+            border_width,
+        )
+
+    def _draw_number_flash(self, state: GameState) -> None:
+        """Draw a brief flash effect on a cell that just received a number.
+
+        The flash fades out over ``_flash_duration`` seconds.
+        """
+        fr, fc = state.flash_cell
+        if fr < 0 or fc < 0:
+            return
+
+        # Calculate how long ago the flash started
+        elapsed = time.time() - state._flash_time
+        if elapsed > self._flash_duration:
+            return
+
+        # Fade from 0.5 alpha to 0 over flash_duration
+        flash_intensity = 1.0 - (elapsed / self._flash_duration)
+
+        x = fc * CELL_SIZE
+        y = fr * CELL_SIZE
+
+        # Create a semi-transparent white overlay
+        flash_surf = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
+        alpha = int(60 * flash_intensity)
+        flash_surf.fill((255, 255, 255, alpha))
+        self.screen.blit(flash_surf, (x, y))
+
+    # ------------------------------------------------------------------
     # HUD
     # ------------------------------------------------------------------
 
@@ -241,21 +327,21 @@ class Renderer:
         # Timer
         timer_text = self._hud_font.render(
             f"Time: {state.minutes:02d}:{state.seconds:02d}",
-            True, (50, 50, 50),
+            True, HUD_TEXT_COLOR,
         )
         self.screen.blit(timer_text, (10, hud_y))
 
         # Mistakes
         mistake_text = self._hud_font.render(
             f"Mistakes: {state.mistake_count}/{state.max_mistakes}",
-            True, INVALID if state.mistake_count >= state.max_mistakes - 1 else (50, 50, 50),
+            True, INVALID if state.mistake_count >= state.max_mistakes - 1 else HUD_TEXT_COLOR,
         )
         self.screen.blit(mistake_text, (10, hud_y + HUD_FONT_SIZE + 5))
 
         # Hints
         hints_text = self._hud_font.render(
             f"Hints: {state.hints_used}/{state.max_hints}",
-            True, (50, 50, 50),
+            True, HUD_TEXT_COLOR,
         )
         self.screen.blit(hints_text, (10, hud_y + 2 * (HUD_FONT_SIZE + 5)))
 
@@ -282,11 +368,11 @@ class Renderer:
         overlay.fill((0, 0, 0, 150))
         self.screen.blit(overlay, (0, 0))
 
-        title = self._overlay_font.render("Paused", True, (255, 255, 255))
+        title = self._overlay_font.render("Paused", True, OVERLAY_TITLE_COLOR)
         title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 30))
         self.screen.blit(title, title_rect)
 
-        hint = self._hud_font.render("Press P to resume", True, (200, 200, 200))
+        hint = self._hud_font.render("Press P to resume", True, OVERLAY_TEXT_COLOR)
         hint_rect = hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30))
         self.screen.blit(hint, hint_rect)
 
@@ -302,7 +388,7 @@ class Renderer:
         overlay.fill((0, 0, 0, 150))
         self.screen.blit(overlay, (0, 0))
 
-        title = self._overlay_font.render("Game Over", True, (192, 57, 43))
+        title = self._overlay_font.render("Game Over", True, GAME_OVER_TITLE_COLOR)
         title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
         self.screen.blit(title, title_rect)
 
@@ -312,7 +398,7 @@ class Renderer:
         seconds = total_seconds % 60
         time_text = self._hud_font.render(
             f"Time: {minutes:02d}:{seconds:02d}",
-            True, (200, 200, 200),
+            True, OVERLAY_TEXT_COLOR,
         )
         time_rect = time_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         self.screen.blit(time_text, time_rect)
@@ -329,7 +415,7 @@ class Renderer:
 
         restart = self._sub_font.render(
             "Press Space to play again",
-            True, (200, 200, 200),
+            True, OVERLAY_TEXT_COLOR,
         )
         restart_rect = restart.get_rect(
             center=(WIDTH // 2, HEIGHT // 2 + 90),
@@ -348,7 +434,7 @@ class Renderer:
         overlay.fill((0, 0, 0, 150))
         self.screen.blit(overlay, (0, 0))
 
-        title = self._overlay_font.render("You Win!", True, (46, 204, 113))
+        title = self._overlay_font.render("You Win!", True, WIN_TITLE_COLOR)
         title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
         self.screen.blit(title, title_rect)
 
@@ -358,14 +444,14 @@ class Renderer:
         seconds = total_seconds % 60
         time_text = self._hud_font.render(
             f"Time: {minutes:02d}:{seconds:02d}",
-            True, (200, 200, 200),
+            True, OVERLAY_TEXT_COLOR,
         )
         time_rect = time_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
         self.screen.blit(time_text, time_rect)
 
         restart = self._sub_font.render(
             "Press Space to play again",
-            True, (200, 200, 200),
+            True, OVERLAY_TEXT_COLOR,
         )
         restart_rect = restart.get_rect(
             center=(WIDTH // 2, HEIGHT // 2 + 50),
@@ -378,7 +464,7 @@ class Renderer:
         overlay.fill((0, 0, 0, 180))
         self.screen.blit(overlay, (0, 0))
 
-        title = self._overlay_font.render("Keyboard Shortcuts", True, (255, 255, 255))
+        title = self._overlay_font.render("Keyboard Shortcuts", True, OVERLAY_TITLE_COLOR)
         title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 180))
         self.screen.blit(title, title_rect)
 
@@ -397,9 +483,9 @@ class Renderer:
         y_start = HEIGHT // 2 - 120
         for key_text, desc_text in shortcuts:
             # Key label
-            key_surf = self._hud_font.render(key_text, True, (241, 196, 15))
+            key_surf = self._hud_font.render(key_text, True, SHORTCUT_KEY_COLOR)
             # Description
-            desc_surf = self._hud_font.render(desc_text, True, (200, 200, 200))
+            desc_surf = self._hud_font.render(desc_text, True, SHORTCUT_DESC_COLOR)
 
             # Center the pair
             total_width = key_surf.get_width() + 20 + desc_surf.get_width()
@@ -409,6 +495,6 @@ class Renderer:
             self.screen.blit(desc_surf, (x + key_surf.get_width() + 20, y_start))
             y_start += 40
 
-        close_hint = self._hud_font.render("Press K to close", True, (150, 150, 150))
+        close_hint = self._hud_font.render("Press K to close", True, SHORTCUT_CLOSE_COLOR)
         close_rect = close_hint.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 160))
         self.screen.blit(close_hint, close_rect)

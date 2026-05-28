@@ -13,11 +13,16 @@ from src.ui.theme import (
     FONT_NAME,
     HEIGHT,
     MENU_ITEM_FONT_SIZE,
+    MENU_ITEM_COLOR,
     PLAYER_TEXT,
     SELECTED,
     SUBTITLE_FONT_SIZE,
     TITLE_FONT_SIZE,
     WIDTH,
+    SUBTITLE_COLOR,
+    FOOTER_HINT_COLOR,
+    DIFFICULTY_LABEL_COLOR,
+    DIFFICULTY_DESC_COLOR,
 )
 
 
@@ -57,7 +62,7 @@ class Menu:
         self.screen.blit(title, title_rect)
 
         # Subtitle
-        subtitle = self._sub_font.render("A relaxing puzzle game", True, (120, 120, 120))
+        subtitle = self._sub_font.render("A relaxing puzzle game", True, SUBTITLE_COLOR)
         subtitle_rect = subtitle.get_rect(center=(WIDTH // 2, HEIGHT // 3 + 50))
         self.screen.blit(subtitle, subtitle_rect)
 
@@ -66,13 +71,13 @@ class Menu:
         menu_y = HEIGHT // 2
 
         for idx, label in enumerate(items):
-            color = SELECTED if idx == hovered_index else (50, 50, 50)
+            color = SELECTED if idx == hovered_index else MENU_ITEM_COLOR
             text = self._item_font.render(label, True, color)
             text_rect = text.get_rect(center=(WIDTH // 2, menu_y + idx * 70))
             self.screen.blit(text, text_rect)
 
         # Footer hint
-        hint = self._sub_font.render("Press Enter to select", True, (160, 160, 160))
+        hint = self._sub_font.render("Press Enter to select", True, FOOTER_HINT_COLOR)
         hint_rect = hint.get_rect(center=(WIDTH // 2, HEIGHT - 60))
         self.screen.blit(hint, hint_rect)
 
@@ -115,17 +120,17 @@ class Menu:
                 pygame.draw.rect(self.screen, SELECTED, item_rect, border_radius=8)
 
             # Label
-            color = (30, 30, 30) if idx == hovered_index else (80, 80, 80)
+            color = (30, 30, 30) if idx == hovered_index else DIFFICULTY_LABEL_COLOR
             text = self._item_font.render(label, True, color)
             text_rect = text.get_rect(center=(WIDTH // 2, menu_y + idx * 80 - 5))
             self.screen.blit(text, text_rect)
 
             # Description
-            desc = self._sub_font.render(description, True, (150, 150, 150))
+            desc = self._sub_font.render(description, True, DIFFICULTY_DESC_COLOR)
             desc_rect = desc.get_rect(center=(WIDTH // 2, menu_y + idx * 80 + 22))
             self.screen.blit(desc, desc_rect)
 
         # Back hint
-        hint = self._sub_font.render("Press Esc to go back", True, (160, 160, 160))
+        hint = self._sub_font.render("Press Esc to go back", True, FOOTER_HINT_COLOR)
         hint_rect = hint.get_rect(center=(WIDTH // 2, HEIGHT - 60))
         self.screen.blit(hint, hint_rect)

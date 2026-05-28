@@ -98,8 +98,35 @@ def _render(
             renderer.render(game_state, screen_manager.current)
             if screen_manager.current == Screen.GAME and hover.show_shortcuts:
                 renderer._draw_shortcuts_overlay()
+            # Clear animation state after rendering
+            game_state.flash_cell = (-1, -1)
         else:
             renderer.render(game_state, Screen.GAME)  # fallback
+
+
+def _create_icon() -> pygame.Surface:
+    """Create a simple Sudoku-themed window icon.
+
+    Draws a 64×64 icon with a 3×3 grid and a number.
+    """
+    icon = pygame.Surface((64, 64), pygame.SRCALPHA)
+    # Background
+    pygame.draw.rect(icon, (255, 255, 255), (0, 0, 64, 64), border_radius=6)
+    # Grid lines
+    cell_size = 20
+    offset_x = (64 - cell_size * 3) // 2
+    offset_y = (64 - cell_size * 3) // 2
+    for i in range(4):
+        x = offset_x + i * cell_size
+        pygame.draw.line(icon, (0, 0, 0), (x, offset_y), (x, offset_y + cell_size * 3), 2 if i % 3 == 0 else 1)
+        y = offset_y + i * cell_size
+        pygame.draw.line(icon, (0, 0, 0), (offset_x, y), (offset_x + cell_size * 3, y), 2 if i % 3 == 0 else 1)
+    # A number in the center cell
+    num_font = pygame.font.Font(None, 24)
+    text = num_font.render("9", True, (41, 128, 185))
+    text_rect = text.get_rect(center=(offset_x + cell_size * 1.5, offset_y + cell_size * 1.5))
+    icon.blit(text, text_rect)
+    return icon
 
 
 def main() -> None:
@@ -107,6 +134,7 @@ def main() -> None:
     pygame.init()
     screen = pygame.display.set_mode((540, 640))
     pygame.display.set_caption("Sudoku")
+    pygame.display.set_icon(_create_icon())
     clock = pygame.time.Clock()
 
     # Shared game objects

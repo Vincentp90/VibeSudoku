@@ -13,6 +13,8 @@ import pygame
 
 from src.ui.screens import Screen
 
+_DIFFICULTY_OPTIONS: tuple[str, ...] = ("easy", "medium", "hard")
+
 if TYPE_CHECKING:
     from src.game_state import GameState
     from src.logic.generator import SudokuGenerator
@@ -196,7 +198,7 @@ class InputHandler:
     def _handle_difficulty_mouse(self, event: pygame.event.Event) -> None:
         mx, my = event.pos
         menu_y = 640 // 2
-        for idx, _ in enumerate(["easy", "medium", "hard"]):
+        for idx in range(len(_DIFFICULTY_OPTIONS)):
             item_rect = pygame.Rect(
                 540 // 2 - 160,
                 menu_y + idx * 80 - 20,
@@ -204,7 +206,7 @@ class InputHandler:
                 60,
             )
             if item_rect.collidepoint(mx, my):
-                difficulty = ["easy", "medium", "hard"][idx]
+                difficulty = _DIFFICULTY_OPTIONS[idx]
                 if self.generator is not None:
                     puzzle, solution = self.generator.generate(difficulty)
                     from src.game_state import GameState
@@ -214,10 +216,9 @@ class InputHandler:
 
     def _get_difficulty_option(self) -> str | None:
         """Return the difficulty string at the current hover index."""
-        options = ["easy", "medium", "hard"]
         idx = self.hover.difficulty_hover
-        if 0 <= idx < len(options):
-            return options[idx]
+        if 0 <= idx < len(_DIFFICULTY_OPTIONS):
+            return _DIFFICULTY_OPTIONS[idx]
         return None
 
     # ------------------------------------------------------------------

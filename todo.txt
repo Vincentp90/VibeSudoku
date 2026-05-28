@@ -20,8 +20,6 @@ ctrl + d to exit
 ----
 
 Prompt:
-Do the refactor task in refactor_difficulty_option.md.
-
 Continue with the work specified in agent-todo.md : complete 7. Polish & Assets. Stop and wait for input when this is done.
 
 Keeping docs up to date:

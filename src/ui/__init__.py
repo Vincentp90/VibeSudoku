@@ -20,6 +20,7 @@ from src.ui.theme import (
 )
 from src.ui.menu import Menu
 from src.ui.renderer import Renderer
+from src.ui.input_handler import HoverState, InputHandler
 
 __all__ = [
     "WIDTH",
@@ -42,4 +43,6 @@ __all__ = [
     "ScreenManager",
     "Menu",
     "Renderer",
+    "HoverState",
+    "InputHandler",
 ]

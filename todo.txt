@@ -20,9 +20,12 @@ ctrl + d to exit
 ----
 
 Prompt:
-Do the refactor task in refactor.md.
+Do the refactor task in refactor_difficulty_option.md.
 
 Continue with the work specified in agent-todo.md : complete 7. Polish & Assets. Stop and wait for input when this is done.
+
+Keeping docs up to date:
+Quickly check if file API.md is still up to date.
 
 Self-improvement prompt:
 Reflect on the work you just completed. What did you struggle with? Do you have suggestions about what we could change so you can do your work more optimally?

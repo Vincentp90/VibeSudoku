@@ -18,7 +18,8 @@ pi --no-tools
 ----
 
 Prompt:
-Problems from playtesting: cell selection color is the same as placed number color. So I can't see the number in the current selected cell.
+Problems from playtesting: pause doesn't stop the timer, esc and space do nothing (see README.md for what they should do), no visual indicator for note/pencil mode. Hint enters number in the first empty cell but instead it should pick a random empty cell and fill in the number. Fix this with TDD. Add a unit test per issue. Run unit tests to verify they fail. Fix issues one by one. Run all unit tests after each issue fixed, proceed to the next issue once all tests (except the new tests) complete succesfully.
+
 Do the tasks specified in improvements.md
 
 Improve tests:

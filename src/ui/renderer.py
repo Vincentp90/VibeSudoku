@@ -182,8 +182,8 @@ class Renderer:
                     # Player-entered but WRONG (invalid)
                     color = INVALID
                 elif r == sel_r and c == sel_c:
-                    # Selected cell
-                    color = SELECTED
+                    # Selected cell — use PLAYER_TEXT so number is visible against SELECTED background
+                    color = PLAYER_TEXT
                 else:
                     # Player-entered, correct
                     color = PLAYER_TEXT
